@@ -43,15 +43,10 @@ class ViewController: UIViewController, UITableViewDataSource {
     }
     
     override func setEditing(_ editing: Bool, animated: Bool) {
-        if (editing) {
-            NSLog("editing")
-            // if this calls the parent setEditing then this gets called indefinitely.
-            // but if I dont call it, then the edit button does not change to "done"
-        } else {
-            NSLog("not Editing ")
-            self.setEditing(editing, animated: animated)
-        }
-        
+       
+        // bug fixed: I was calling self instead of super
+        super.setEditing(editing, animated: animated)
+
         table.setEditing(editing, animated: animated)
     }
     
