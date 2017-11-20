@@ -10,7 +10,7 @@ import UIKit
 
 class ViewController: UIViewController, UITableViewDataSource {
     @IBOutlet weak var table: UITableView!
-    var data: [String] = ["Row 1", "Row 2", "Row 3"]
+    var data: [String] = []
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
@@ -21,13 +21,19 @@ class ViewController: UIViewController, UITableViewDataSource {
         
         // this editButtonItem is built into the tableview
         self.navigationItem.leftBarButtonItem = editButtonItem
+        
+        load()
     }
     
     @objc func addNote() {
+        if (table.isEditing){
+            return
+        }
         let name:String = "Row \(data.count + 1)"
         data.insert(name, at: 0)
         let indexPath:IndexPath = IndexPath(row:0, section: 0)
         table.insertRows(at: [indexPath], with: .automatic)
+        save()
     }
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -53,6 +59,20 @@ class ViewController: UIViewController, UITableViewDataSource {
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
         data.remove(at: indexPath.row)
         table.deleteRows(at: [indexPath], with: .fade)
+        save()
+    }
+    
+    
+    func save() {
+        UserDefaults.standard.set(data, forKey: "notes")
+        UserDefaults.standard.synchronize()
+    }
+    
+    func load() {
+        if let loadedData = UserDefaults.standard.value(forKey: "notes") as? [String] {
+            data = loadedData
+            table.reloadData()
+        }
     }
     
     override func didReceiveMemoryWarning() {
